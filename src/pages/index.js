@@ -86,8 +86,7 @@ export default function Home() {
       const newPKP = await mintGooglePKP(googleIdToken);
 
       // Add new PKP to list of PKPs
-      const morePKPs = pkps.push(newPKP);
-      setPKPs(morePKPs);
+      setPKPs(pkps + [newPKP]);
 
       setView(Views.MINTED);
       setView(Views.CREATING_SESSION);
