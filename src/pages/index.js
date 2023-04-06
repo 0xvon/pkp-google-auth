@@ -15,6 +15,14 @@ import {
   pollRequestUntilTerminalState,
 } from '@/utils/relay';
 import { useRouter } from 'next/router';
+import { serialize, recoverAddress } from "@ethersproject/transactions";
+import {
+  hexlify,
+  splitSignature,
+  hexZeroPad,
+  joinSignature,
+} from "@ethersproject/bytes";
+import { recoverPublicKey, computePublicKey } from "@ethersproject/signing-key";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -163,11 +171,14 @@ export default function Home() {
         },
       });
       // Get signature
-      const result = results.signatures['sig1'];
+      console.log(results);
+      const { signatures } = results;
+      const sig = signatures.sig1;
+      const { dataSigned } = sig;
       const signature = ethers.utils.joinSignature({
-        r: '0x' + result.r,
-        s: '0x' + result.s,
-        v: result.recid,
+        r: '0x' + sig.r,
+        s: '0x' + sig.s,
+        v: sig.recid,
       });
       setSignature(signature);
 
@@ -178,6 +189,28 @@ export default function Home() {
       const verified =
         currentPKP.ethAddress.toLowerCase() === recoveredAddr.toLowerCase();
       setVerified(verified);
+
+      // const { txParams } = response;
+
+      // console.log("encodedSig", encodedSig);
+      // console.log("sig length in bytes: ", encodedSig.substring(2).length / 2);
+      // console.log("dataSigned", dataSigned);
+      // const splitSig = splitSignature(encodedSig);
+      // console.log("splitSig", splitSig);
+
+      // const recoveredPubkey = recoverPublicKey(dataSigned, encodedSig);
+      // console.log("uncompressed recoveredPubkey", recoveredPubkey);
+      // const compressedRecoveredPubkey = computePublicKey(recoveredPubkey, true);
+      // console.log("compressed recoveredPubkey", compressedRecoveredPubkey);
+      // const recoveredAddress = recoverAddress(dataSigned, encodedSig);
+      // console.log("recoveredAddress", recoveredAddress);
+
+      // const txResponse = await provider.sendTransaction(tx);
+      // console.log('Transaction sent:', txResponse.hash);
+
+      // const txn = serialize(txParams, encodedSig);
+
+      // console.log("txn", txn);
     } catch (err) {
       setError(err);
       setView(Views.ERROR);
